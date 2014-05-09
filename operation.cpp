@@ -1,136 +1,250 @@
-#include "Matrice.h"
+//
+//  operation.cpp
+//  LibrairieMatricielle2014
+//
+
+
 #include "operation.h"
+#include <fstream>
 
+using namespace std;
 
-//Definir les opérations
-
-
-  /*
-  ** Division avec 2 matrices en argument, permet de diviser
-  ** 2 matrices entre elles si elles sont carrées grace aux fonctions
-  ** inversion et multiplication et retourne une matrice en résultat.
-  */
-
-  bool operation::VerifCarre (Matrice A)
-  {
-	if (A.ligne == B.colonne)
-		return true;
-	std::cout << "La matrice n'est pas carré ..." << std::endl;
-	return false;
-  }
-  
-  
-  Matrice operation::Division (Matrice A, Matrice B)
-  {
-    Matrice Resultat;
-    Matrice B1;
-	
-	if (!(A.VerifCarre && B.VerifCarre))
-		return NULL;
-	
-      B1 = new Matrice (B.Inversion());
-      Resultat = new Matrice (Multiplication (A,B1));
-      return Resultat;
-  }
-  
-  /*
-  ** Division avec 1 matrice et un int en argument, permet de diviser
-  ** 1 matrices par un coefficient et retourne une matrice en résultat.
-  */
-  
-    Matrice operation::Division (Matrice A, int coefficient)
-  {
-    Matrice Resultat;
+Matrice::Matrice(){
     
-    for (int i =0; i<A.ligne; i++)
+}
+
+Matrice::~Matrice(){
+    
+}
+
+int Matrice::genererMatrice(){
+    
+    this->Table=new int *[1000];
+    for(int lign=0; lign<1000; lign++)
     {
-      for (int j=0; j<A.colonne; j++)
-      {
-        Resultat [i][j] = A[i][j]/coefficient;
-      }
+        this->Table[lign]=new int[1000];
+        for(int col=0; col<1000; col++)
+        {
+            
+        }
     }
-    return Resultat;
-  }
-  
-  Matrice operation::Multiplication (Matrice A, Matrice B)
-  {
-	if (A.Creuse ())
-		return MultiplicationCreuse (A,B);
-	else if (B.Creuse ())
-		return MultiplicationCreuse (B,A);
-	else
-		return MultiplicationSimple (A,B);
-  }
-  
-  Matrice operation::Multiplication (int coefficient)
-  {
-	Matrice A (getLigne(), getColonne);
-	A.miseZero ();
-	
-	for (int i=0; i<A.getLigne(); i++)
-	{
-		for (int j=0; j<A.getColonne(); j++)
-		{
-			A = [i][j]*coefficient;
-		}
-	}
-	return A;
-  }
-  
-  
-  Matrice operation::MultiplicationSimple (Matrice A, Matrice B)
-  {
-	if (A.colonne != B.ligne)
-	{
-		std::cout << "L'opération n'est pas possible car le nombre de colonnes";
-		std::cout << "de A n'est pas égal au nombre de lignes de B" << std::enl;
-		return 0;
-	}
-	else
-	{
-	Matrice R (A.getLigne(),B.getColonne);
-	R.miseZero ();
-	
-		for (int i=0; i<A.ligne; i++)
-		{
-			for (int j=0; j<B.colonne; j++)
-			{
-				for (int k=0; k<A.colonne; k++)
-				{
-					R[i][j] += A[i][k]*B[k][i];
-				}
-			}
-		}
-		return R;
-	}
-  }
-  
-  Matrice & operation::miseZero ()
-  {
-	for (int i=0; i<ligne; i++)
-		for (int j=0; j<colonne; j++)
-			Table[i][j] = 0;
-	return this;
-  }
-  
-  /*
-  ** Fonction d'Inversion, permet d'inverser une matrice pour pouvoir
-  ** effectuer la division matricielle entre autres. Retourne une matrice.
-  */
-  
-  Matrice operation::Inversion ()
-  {
-	Matrice R(getLigne(), getColonne);
-	R.miseZero();
-	
-	for (int i=0; i<getLigne(); i++)
-		for (int j=0; j<getColonne(); j++)
-			R[i][i] = 1/(this->[i][i]);
-	return R;
-  }
-  
- int main ()
- {
-	
-	return 0;
- }
+    
+    return 0;
+}
+
+
+void Matrice::setNbLigneA(){
+    
+    int cmpt = 1;
+    string s;
+    ifstream fichier("matrice2.txt", ios::in);
+    
+    if(fichier){
+        
+        while(getline(fichier,s))
+        {
+            cmpt++;
+        }
+        
+        fichier.close();
+    }
+    
+    _nbLigneA=cmpt;
+}
+
+
+void Matrice::initLigneA(){
+    
+    this->ligneA = new int [_nbLigneA];
+    
+}
+
+void Matrice::initColoneA(){
+    
+    this->coloneA = new int [_nbLigneA];
+    
+}
+
+void Matrice::initValeurA(){
+    
+    this->valeurA = new int [_nbLigneA];
+    
+}
+
+
+/*
+ * Charge la matrice A et place Ligne Colone et Valeur
+ * dans 3 tableaux
+ *
+ */
+
+void Matrice::chargerMatriceA(){
+    
+    setNbLigneA();
+    initValeurA();
+    initColoneA();
+    initLigneA();
+
+    ifstream fichier("matriceA.txt", ios::in);  // on ouvre en lecture
+    
+    if(fichier)
+    {
+        string contenu;
+        fichier.ignore(0, '\n'); // Saute la premiere ligne
+        
+        getline(fichier, contenu);
+
+        cout << contenu << endl;
+        
+        int var;
+        
+        int i=0;
+        
+        while (fichier){
+            
+            /*fichier >> var;
+            ligne[i]=var;
+            fichier >> var;
+            col[i]=var;
+            fichier >> var;
+            val[i]=var;
+            i++;*/
+            
+            fichier >> var;
+            this->ligneA[i]=var;
+            fichier >> var;
+            this->coloneA[i]=var;
+            fichier >> var;
+            this->valeurA[i]=var;
+            i++;
+            
+        }
+                
+        cout << "valeur 2: " << valeurA[1] <<endl;
+        cout << "valeur 1: " << valeurA[0] <<endl;
+        
+        fichier.close();
+    }
+    else
+        cerr << "Impossible d'ouvrir le fichier !" << endl;
+
+}
+
+//Matrice B:
+
+void Matrice::setNbLigneB(){
+    
+    int cmpt = 1;
+    string s;
+    ifstream fichier("matriceB.txt", ios::in);
+    
+    if(fichier){
+        
+        while(getline(fichier,s))
+        {
+            cmpt++;
+        }
+        
+        fichier.close();
+    }
+    
+    _nbLigneA=cmpt;
+}
+
+
+void Matrice::initLigneB(){
+    
+    this->ligneB = new int [_nbLigneB];
+    
+}
+
+void Matrice::initColoneB(){
+    
+    this->coloneB = new int [_nbLigneB];
+    
+}
+
+void Matrice::initValeurB(){
+    
+    this->valeurB = new int [_nbLigneB];
+    
+}
+
+
+/*
+ * Charge la matrice B et place Ligne Colone et Valeur
+ * dans 3 tableaux
+ *
+ */
+
+void Matrice::chargerMatriceB(){
+    
+    setNbLigneB();
+    initValeurB();
+    initColoneB();
+    initLigneB();
+    
+    ifstream fichier("matriceB.txt", ios::in);  // on ouvre en lecture
+    
+    if(fichier)
+    {
+        string contenu;
+        fichier.ignore(0, '\n'); // Saute la premiere ligne
+        
+        getline(fichier, contenu);
+        
+        cout << contenu << endl;
+        
+        int var;
+        
+        int i=0;
+        
+        while (fichier){
+            
+            fichier >> var;
+            this->ligneB[i]=var;
+            fichier >> var;
+            this->coloneB[i]=var;
+            fichier >> var;
+            this->valeurB[i]=var;
+            i++;
+            
+        }
+        
+        cout << "valeur 2: " << valeurB[1] <<endl;
+        cout << "valeur 1: " << valeurB[0] <<endl;
+        
+        fichier.close();
+    }
+    else
+        cerr << "Impossible d'ouvrir le fichier !" << endl;
+    
+}
+
+
+
+//Definir les opérations:
+
+/*
+ * Additions de deux matrice:
+ */
+
+void Matrice::matriceVierge(){
+    
+    ofstream fichier;
+    
+    fichier.open("matriceTest.txt", ios::out);
+    if (fichier.bad())
+    {
+        cerr << "Erreur dans la création de la matrice resultat" <<endl;
+    }
+        
+    //fichier <<"contenu du fichier" << endl;
+    
+    
+    
+    fichier.close();
+   
+    
+}
+

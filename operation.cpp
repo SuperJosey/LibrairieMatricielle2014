@@ -37,7 +37,7 @@ void Matrice::setNbLigneA(){
     
     int cmpt = 1;
     string s;
-    ifstream fichier("matrice2.txt", ios::in);
+    ifstream fichier("matriceA.txt", ios::in);
     
     if(fichier){
         
@@ -49,7 +49,7 @@ void Matrice::setNbLigneA(){
         fichier.close();
     }
     
-    _nbLigneA=cmpt;
+    this->_nbLigneA=cmpt;
 }
 
 
@@ -89,27 +89,32 @@ void Matrice::chargerMatriceA(){
     
     if(fichier)
     {
-        string contenu;
-        fichier.ignore(0, '\n'); // Saute la premiere ligne
+        //string contenu;
+        //fichier.ignore(0, '\n'); // Saute la premiere ligne
+        //getline(fichier, contenu);
+        //cout << contenu << endl;
         
-        getline(fichier, contenu);
-
-        cout << contenu << endl;
+        char p;
+        int tmpLigne;
+        int tmpCol;
+        
+        fichier >> p; //Caracetere pour identifier que l'on recupere bien la taille
+        fichier >> tmpLigne;
+        fichier >> tmpCol;
+        
+        this->nbLigneA = tmpLigne;
+        this->nbColoneA = tmpCol;
+        
+        
+        cout << "valeur de si1: " << tmpLigne << "valeur de si2: " << tmpCol <<endl;
+        cout << "valeur de p: " << p << endl;
         
         int var;
         
         int i=0;
         
         while (fichier){
-            
-            /*fichier >> var;
-            ligne[i]=var;
-            fichier >> var;
-            col[i]=var;
-            fichier >> var;
-            val[i]=var;
-            i++;*/
-            
+
             fichier >> var;
             this->ligneA[i]=var;
             fichier >> var;
@@ -148,7 +153,7 @@ void Matrice::setNbLigneB(){
         fichier.close();
     }
     
-    _nbLigneA=cmpt;
+    this->_nbLigneB=cmpt;
 }
 
 
@@ -188,12 +193,26 @@ void Matrice::chargerMatriceB(){
     
     if(fichier)
     {
-        string contenu;
-        fichier.ignore(0, '\n'); // Saute la premiere ligne
+        //string contenu;
+        //fichier.ignore(0, '\n'); // Saute la premiere ligne
+        //getline(fichier, contenu);
+        //cout << contenu << endl;
         
-        getline(fichier, contenu);
+        char p;
+        int tmpLigne;
+        int tmpCol;
         
-        cout << contenu << endl;
+        fichier >> p; //Caracetere pour identifier que l'on recupere bien la taille
+        fichier >> tmpLigne;
+        fichier >> tmpCol;
+        
+        this->nbLigneB = tmpLigne; 
+        this->nbColoneB = tmpCol;
+        
+
+        cout << "valeur de si1: " << tmpLigne << "valeur de si2: " << tmpCol <<endl;
+        cout << "valeur de p: " << p << endl;
+
         
         int var;
         
@@ -211,6 +230,7 @@ void Matrice::chargerMatriceB(){
             
         }
         
+        cout << "valeur 3: " << valeurB[2] <<endl;
         cout << "valeur 2: " << valeurB[1] <<endl;
         cout << "valeur 1: " << valeurB[0] <<endl;
         
@@ -231,6 +251,8 @@ void Matrice::chargerMatriceB(){
 
 void Matrice::matriceVierge(){
     
+    //cout << "test nbA: " << this->_nbLigneA << "test nbB: " << this->_nbLigneB <<endl;
+    
     ofstream fichier;
     
     fichier.open("matriceTest.txt", ios::out);
@@ -239,12 +261,87 @@ void Matrice::matriceVierge(){
         cerr << "Erreur dans la création de la matrice resultat" <<endl;
     }
         
-    //fichier <<"contenu du fichier" << endl;
     
-    
+    // Si la matrice A est de la meme taille que la matrice B:
+    if((nbLigneA == nbLigneB) && (nbColoneA == nbColoneB)){
+        
+        fichier << "s " << this->nbLigneA << " " << this->nbColoneA <<endl;
+        
+        //On recupere le nb de ligne maximum que contiendra notre matrice resultat:
+        int tmpMax = getMaxNbLigne();
+        
+        if(tmpMax!=0){
+            for(int i=0; i<=(nbLigneA*nbColoneA); i++ ){
+              
+                if(valeurA[i] !=0 && valeurB[i] !=0){
+                    
+                    if(ligneA[i] == ligneB[i]){
+                        if(coloneA[i]<coloneB[i]){
+                            fichier << ligneA[i] << " " << coloneA[i] << " " << valeurA[i]<<endl;
+                        }
+                        else if(coloneB[i]<coloneA[i]){
+                            fichier << ligneB[i] << " " << coloneB[i] << " " << valeurB[i]<<endl;
+                        }
+                        else if(coloneA[i] == coloneB[i]){
+                            fichier << ligneA[i] << "_" << coloneA[i] << "_" << (valeurA[i]+valeurB[i])<<endl;
+                        }
+
+                    }
+                
+                    if(ligneA[i] < ligneB[i]){
+                    
+                        fichier << ligneA[i] << " " << coloneA[i] << " " << valeurA[i]<<endl;
+                    }
+                    
+
+                }
+            }
+                
+        }
+        else{
+            cerr << "erreur: Matrices vides" <<endl;
+        }
+        
+    }
+    else{
+        cerr << "erreur: Matrices de tailles differentes" <<endl;
+    }
     
     fichier.close();
    
     
 }
+
+/*
+ * getMaxNbLigne(): compare le nombre de ligne dans les deux fichier LCV correspondant
+ * aux matrice A et B puis retourne le nombre maximal de ligne contenu dans le fichier
+ * (la matrice comportant le moins de Valeur nulle)
+ */
+
+int Matrice::getMaxNbLigne(){
+    
+    //Si il existe des lignes dans le fichier A et B
+    if((this->_nbLigneA != -1) && (this->_nbLigneB != -1)){
+       
+        if(this->_nbLigneA > this->_nbLigneB){
+            return this->_nbLigneA;
+        }
+        else if (this->_nbLigneA == this->_nbLigneB){
+            return this->_nbLigneA;
+        }
+        else if (this->_nbLigneA < this->_nbLigneB){
+            return this->_nbLigneB;
+        }
+    }
+    else{
+        cerr <<"erreur: Aucune valeur contenu dans _nbLigneA et _nbLigneB"<<endl;
+    }
+    
+    return 0;
+}
+
+
+
+
+
 

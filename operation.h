@@ -24,11 +24,15 @@ private:
     int *ligneA;
     int *coloneA;
     int *valeurA;
+    int nbLigneA; //nb de Ligne de la matrice A au total
+    int nbColoneA; //nb de Colone de la matrice A au total
     
     //Matrice B:
     int *ligneB;
     int *coloneB;
     int *valeurB;
+    int nbLigneB; //nb de Ligne de la matrice B au total
+    int nbColoneB;//nb de Colone de la matrice B au total
     
 public:
     Matrice();
@@ -36,7 +40,8 @@ public:
     int setLigne();
     int setColone();
     int genererMatrice();
-
+    int getMaxNbLigne(); 
+    
     
     
     //Matrice A:
